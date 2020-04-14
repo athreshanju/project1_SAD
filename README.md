@@ -1,1 +1,3 @@
-# project1_SAD
+# Project 1
+
+Web Programming with Python and JavaScript
