@@ -32,10 +32,11 @@ def register():
 	return render_template("reg.html")
 
 
-@app.route("/user",methods=["POST"])
+@app.route("/user",methods=["POST","GET"])
 def user():
 	username = request.form.get("username")
 	password = request.form.get("pass")
+	Email = request.form.get("email")
 	print(username,file=sys.stderr)
-	return render_template("pager.html", name=username)
+	return render_template("pager.html", name=username,email=Email)
 
