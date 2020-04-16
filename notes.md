@@ -8,4 +8,4 @@ youtube videos -- to install flask
 signing in to adminer by filling credentials of database some timetaking
 installing flask and debugging is tricky and time consuming
 
-Time elapsed 30 min for each task.
+Time elapsed 30 min to 45 min for each task.
