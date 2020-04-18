@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Admin</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+</head>
+<body>
+
+<div class="container">
+  <h2>User Table</h2>
+           
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in adm%}
+        <tr>
+          <td>{{i.username}}</td>
+          <td>{{i.password}}</td>
+          <td>{{i.time}}</td>
+        </tr>
+      {% endfor%}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

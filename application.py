@@ -1,10 +1,11 @@
 import os
 import sys
+import time
 
+from users import *
 from flask import Flask, session, render_template, request,redirect
-from flask_session import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+
+
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -14,13 +15,16 @@ if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
 # Configure session to use filesystem
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+    
+
 
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
-db = scoped_session(sessionmaker(bind=engine))
+
 
 
 @app.route("/")
@@ -32,11 +36,22 @@ def register():
 	return render_template("reg.html")
 
 
-@app.route("/user",methods=["POST","GET"])
-def user():
-	username = request.form.get("username")
-	password = request.form.get("pass")
+@app.route("/User",methods=["POST","GET"])
+def User():
+	Username = request.form.get("username")
+	Password = request.form.get("pass")
 	Email = request.form.get("email")
-	print(username,file=sys.stderr)
-	return render_template("pager.html", name=username,email=Email)
+	print(Username,file=sys.stderr)
+	try:
+		usr = user(username = Username, email = Email,password = Password , time = time.ctime(time.time()))
 
+		db.session.add(usr)
+		db.session.commit()
+	except ValueError:
+		return render_template("error.html")
+	return render_template("pager.html",name = Username,email = Email)
+
+@app.route("/admin")
+def admin():
+	adm = user.query.all()
+	return render_template("admin.html",adm = adm)
