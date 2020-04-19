@@ -4,8 +4,7 @@ import time
 
 from users import *
 from flask import Flask, session, render_template, request,redirect
-
-
+from sqlalchemy import create_engine,desc
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -55,5 +54,5 @@ def User():
 
 @app.route("/admin")
 def admin():
-	adm = user.query.all()
+	adm = user.query.order_by(desc(user.time)).all()
 	return render_template("admin.html",adm = adm)
