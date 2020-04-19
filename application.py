@@ -42,13 +42,15 @@ def User():
 	Password = request.form.get("pass")
 	Email = request.form.get("email")
 	print(Username,file=sys.stderr)
-	try:
+	obj = user.query.filter_by(username = Username).first()
+	if obj is None:
 		usr = user(username = Username, email = Email,password = Password , time = time.ctime(time.time()))
 
 		db.session.add(usr)
 		db.session.commit()
-	except ValueError:
-		return render_template("error.html")
+	else:
+		print()
+		return render_template("reg.html", message = "email already exists!")
 	return render_template("pager.html",name = Username,email = Email)
 
 @app.route("/admin")
