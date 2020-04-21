@@ -1,7 +1,9 @@
  <html>
  <head>
 
+
     {% extends layout.html %}
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  </head>
  <body>
@@ -13,10 +15,15 @@
                 <div class="column is-half">
                     <div class="box">
 
+
                         <p>{{ message }}</p>
                         
                         <form>
                               
+
+                        
+                                  
+
                               <h2>Register Form</h2>
                                 <div class="input-container">
                                       <i class="fa fa-user icon"></i>
@@ -30,11 +37,13 @@
 
                                  <div class="input-container">
                                          <i class="fa fa-key icon"></i>
+
                                           <input class="input-field" type="password" placeholder="Password" name="pass" minlength="6" required>
                                  </div>
 
                                 <button type="submit" class="btn" formmethod="POST" formaction=" {{url_for ('User')}}">Register</button><br><br>
                                 <button type="submit" class="btn" formmethod="POST" formaction=" {{url_for ('auth')}}">Login</button>
+
 
                         </form>
                     </div>
