@@ -1,11 +1,6 @@
 <html>
 <head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-        
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-        
-        <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+	{% extends layout.html %}
     </head>
     <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
             <a class="navbar-brand">{{username}}</a>
@@ -18,9 +13,7 @@
     <body>
             <p>{{message}}</p>
             username = {{username}} 
-            <!-- <form>
-            <b><button type="submit" formaction=" {{url_for ('logout',username=username
-   )}}">Logout</button></b></br></form> -->
+           
    
     </body>
     </html>

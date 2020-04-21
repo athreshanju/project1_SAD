@@ -55,7 +55,7 @@ def User():
             db.session.commit()
             return render_template("pager.html",name = Username,email = Email)
         else:
-            # print()
+            
             return render_template("reg.html", message = "email already exists!")
     if request.method == "GET":
         return "<h1> please register yourself </h1>"
