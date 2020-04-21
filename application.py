@@ -29,16 +29,17 @@ with app.app_context():
 
 
 
-@app.route("/")
+@app.route("/register")
 def index():
     if 'username' in session:
         return redirect(url_for('home'))
-    return redirect(url_for('register'))
-
-
-@app.route("/register")
-def register():
+    # return redirect(url_for('register'))
     return render_template("reg.html")
+
+
+# @app.route("/register")
+# def register():
+#     return render_template("reg.html")
 
 
 @app.route("/User",methods=["POST","GET"])
