@@ -37,9 +37,7 @@ def index():
     return render_template("reg.html")
 
 
-# @app.route("/register")
-# def register():
-#     return render_template("reg.html")
+
 
 
 @app.route("/User",methods=["POST","GET"])
