@@ -33,7 +33,7 @@ with app.app_context():
 def index():
     if 'username' in session:
         return redirect(url_for('home'))
-    # return redirect(url_for('register'))
+    
     return render_template("reg.html")
 
 
