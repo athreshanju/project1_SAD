@@ -3,6 +3,7 @@ import sys
 import time
 
 from users import *
+
 from flask import Flask, session, render_template, request,redirect,url_for
 from sqlalchemy import create_engine,desc
 
@@ -10,6 +11,10 @@ from sqlalchemy import create_engine,desc
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'khammam'
+
+
+
+
 
 
 # Check for environment variable
@@ -29,8 +34,10 @@ with app.app_context():
 
 
 
+
 @app.route("/register")
 def index():
+
     if 'username' in session:
         return redirect(url_for('home'))
     
@@ -40,8 +47,10 @@ def index():
 
 
 
+
 @app.route("/User",methods=["POST","GET"])
 def User():
+
     if request.method == "POST":
         Username = request.form.get("username")
         Password = request.form.get("pass")
@@ -95,5 +104,7 @@ def userhome(user):
 def logout(username):
     session.pop(username, None)
     return redirect(url_for('index'))
+
+
 
 
