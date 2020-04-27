@@ -1,12 +1,18 @@
  <html>
  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    
+    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
 
-
-    {% extends layout.html %}
+    
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  </head>
  <body>
+    <div style="background-image: url('https://drive.google.com/open?id=1qN4uq4RYlxl7eCvGQ4W_PJNlLBcTpHQd');">
     <h1>Create an Account Registration</h1>
 
  <section class="section">
@@ -32,7 +38,7 @@
 
                                  <div class="input-container">
                                         <i class="fa fa-envelope icon"></i>
-                                         <input class="input-field" type="text" placeholder="Email" name="email" required>
+                                         <input class="input-field" type="email" placeholder="Email" name="email" required>
                                  </div>
 
                                  <div class="input-container">

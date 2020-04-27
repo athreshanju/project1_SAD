@@ -2,10 +2,17 @@ import os
 import sys
 import time
 
+
 from users import *
 
 from flask import Flask, session, render_template, request,redirect,url_for
-from sqlalchemy import create_engine,desc
+from sqlalchemy import create_engine,desc,or_
+from booksdb import *
+
+
+
+import requests
+
 
 
 
@@ -32,15 +39,16 @@ with app.app_context():
 
 # Set up database
 
+@app.route("/")
+def index():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    return redirect(url_for("register"))
 
 
 
 @app.route("/register")
-def index():
-
-    if 'username' in session:
-        return redirect(url_for('home'))
-    
+def register():
     return render_template("reg.html")
 
 
@@ -102,9 +110,26 @@ def userhome(user):
 
 @app.route("/logout/<username>")
 def logout(username):
-    session.pop(username, None)
-    return redirect(url_for('index'))
+    if username in session:
+        session.pop(username, None)
+        return redirect(url_for('index'))
 
 
+   
 
 
+@app.route("/search",methods=["POST","GET"])
+def search():
+    if request.method=="POST":
+        for key in session.keys():
+                username = key
+        if not request.form.get("book"):
+            return render_template("login.html",msg = "please search a book by its title or isbn or author or year",username=username)
+        book = request.form.get("book")
+        bookreq = str(book)
+        booksdata = db.session.query(Books.isbn,Books.title,Books.author,Books.year).filter(or_(Books.title.like("%"+bookreq+"%"),Books.author.like("%"+bookreq+"%"),Books.isbn.like("%"+bookreq+"%"),Books.year.like("%"+bookreq+"%"))).all()
+        if booksdata.__len__()==0:
+            return render_template("login.html",msg = "we could not find books with your search!",username = username)
+        else:
+            return render_template("login.html",books=booksdata,username=username)
+    return render_template("reg.html",message = "please login to view the home page!!")
