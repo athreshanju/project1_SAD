@@ -3,6 +3,7 @@ import sys
 import time
 
 from users import *
+from booksdb import *
 
 from flask import Flask, session, render_template, request,redirect,url_for
 from sqlalchemy import create_engine,desc
@@ -34,13 +35,16 @@ with app.app_context():
 
 
 
-
-@app.route("/register")
+@app.route("/")
 def index():
-
     if 'username' in session:
         return redirect(url_for('home'))
-    
+    return redirect(url_for("register"))
+
+
+
+@app.route("/register")
+def register():
     return render_template("reg.html")
 
 
@@ -105,6 +109,9 @@ def logout(username):
     session.pop(username, None)
     return redirect(url_for('index'))
 
-
+@app.route("/bookpage/<id>")
+def bookspage(id):
+    response=db.session.query(Books).filter(Books.isbn==id)
+    return render_template('bookpage.html',book_details=response)
 
 

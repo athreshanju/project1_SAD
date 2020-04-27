@@ -52,18 +52,24 @@
 </head>
 
 <body>
-  <button class="btn"><i class="fa fa-home"></i> Home</button>
+  <input type="button" class="btn btn-lg btn-success" onclick="location.href='reg.html';" value="Home" />
     <div class="float-right">
         <a href="#" class="btn btn-info btn-lg">
-          <span align='topright' class="glyphicon glyphicon-log-out"></span> Log out
+          <!-- <span align='topright' class="glyphicon glyphicon-log-out"></span> Log out -->
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formaction=" {{url_for ('logout',username=username
+              )}}">Logout</button>
+
         </a>
         </div>
-    <table align ='center'>
-        <th>Author</th>
-        <th>Book Name</th>
-        <th>year</th>
-        <th>ISBN</th>
-    </table>
-    
+        {% for i in book_details %}
+        <img src = "http://covers.openlibrary.org/b/isbn/{{i.isbn}}.jpg" alt = {{i.title}}/>
+        <ul style="list-style-type:circle;">
+    <li>ISBN:{{ i.isbn}}</li>
+    <li> AUTHOR:{{ i.author}}</li>
+    <li> TITLE:{{ i.title}}</li>
+    <li> YEAR:{{ i.year}}</li>
+    {% endfor %}
+  </ul>
+    <p>here there will be link for review</p>
 </body>
 </html>
