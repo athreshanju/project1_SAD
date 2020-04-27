@@ -1,21 +1,18 @@
 import os
 import sys
 import time
+from userReview import *
 
+from test import bookreview
 from users import *
-
+import json
 from flask import Flask, session, render_template, request,redirect,url_for
 from sqlalchemy import create_engine,desc
+import requests
 
-
-
-app = Flask(__name__, static_url_path='/static')
+# app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 app.secret_key = 'khammam'
-
-
-
-
-
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -27,25 +24,20 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 with app.app_context():
     db.create_all()
-    
 
 
 # Set up database
-
+@app.route("/")
+def index():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    return redirect(url_for("register"))
 
 
 
 @app.route("/register")
-def index():
-
-    if 'username' in session:
-        return redirect(url_for('home'))
-    
+def register():
     return render_template("reg.html")
-
-
-
-
 
 
 @app.route("/User",methods=["POST","GET"])
@@ -102,9 +94,57 @@ def userhome(user):
 
 @app.route("/logout/<username>")
 def logout(username):
+    print("Entered")
     session.pop(username, None)
     return redirect(url_for('index'))
 
+@app.route("/bookpage",methods=["POST","GET"])
+def bookspage():
+    print("Entered in b")
+    for key in session.keys():
+        username = key
+    book = bookreview("1416949658", "The Dark Is Rising", "Susan Cooper", 1973)
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "2VIV9mRWiAq0OuKcOPiA", "isbns": book.isbn})
+    data = res.text
+    parsed = json.loads(data)
+    print(parsed)
+    res = {}
+    for i in parsed:
+        for j in (parsed[i]):
+            res = j
 
+    # Variables for testing
+    bookisbn = book.isbn
+
+    # Get all the reviews for the given book.
+    allreviews = review.query.filter_by(isbn=bookisbn).all()
+    if request.method == "POST":
+        rating = request.form.get("rating")
+        reviews = request.form.get("review")
+        isbn = book.isbn
+        timestamp = time.ctime(time.time())
+        title = book.title
+        user = review(isbn=isbn, review=reviews, rating=rating,
+                      time_stamp=timestamp, title=title, username=username)
+        db.session.add(user)
+        db.session.commit()
+
+
+        # Get all the reviews for the given book.
+        allreviews = review.query.filter_by(isbn=bookisbn).all()
+        return render_template("bookpage.html", res=res, book=book, review=allreviews, property="none", message="You reviewed this book!!")
+    else:
+        # database query to check if the user had given review to that paticular book.
+        rev = review.query.filter(
+            review.isbn == bookisbn, review.username == username).first()
+
+        # print(rev)
+
+        # if review was not given then dispaly the book page with review button
+        if rev is None:
+            return render_template("bookpage.html", book=book, review=allreviews, res=res,username=username)
+        else:
+            return render_template("bookpage.html", book=book, message="You reviewed this book!!", review=allreviews, res=res, property="none",username=username)
 
 
