@@ -3,7 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-
 class review(db.Model):
     __tablename__ = "reviews"
     isbn = db.Column(db.String, nullable=False, primary_key=True)
