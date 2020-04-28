@@ -47,18 +47,8 @@ def index():
 
 
 
-@app.route("/register")
+@app.route("/register",methods=["POST","GET"])
 def register():
-    return render_template("reg.html")
-
-
-
-
-
-
-@app.route("/User",methods=["POST","GET"])
-def User():
-
     if request.method == "POST":
         Username = request.form.get("username")
         Password = request.form.get("pass")
@@ -74,7 +64,14 @@ def User():
             
             return render_template("reg.html", message = "email already exists!")
     if request.method == "GET":
-        return "<h1> please register yourself </h1>"
+        return render_template("reg.html")
+
+
+
+
+
+
+
 
 @app.route("/admin")
 def admin():
