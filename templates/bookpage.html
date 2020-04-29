@@ -11,7 +11,7 @@
     <h3 align='center'  style="color:black ">welcome to the book session</h3>
     <style>
         body {
- background-image: url("/Users/koushikmaruvada/Desktop/projcontinuation/project1_SAD/images/search.jpg");
+  background-image: url("/Users/koushikmaruvada/Desktop/projcontinuation/project1_SAD/images/search.jpg"); */
  background-repeat: no-repeat;
  background-size: cover;
 }
@@ -50,14 +50,11 @@
 }
         </style>
 </head>
-
 <body>
   <input type="button" class="btn btn-lg btn-success" onclick="location.href='reg.html';" value="Home" />
     <div class="float-right">
-        <a href="#" class="btn btn-info btn-lg">
-          <!-- <span align='topright' class="glyphicon glyphicon-log-out"></span> Log out -->
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formaction=" {{url_for ('logout',username=username
-              )}}">Logout</button>
+          <form ><button class="btn btn-outline-success my-2 my-sm-0" type="submit" formmethod = "GET" formaction=" {{url_for ('logout',username=username
+              )}}">Logout</button></form>
 
         </a>
         </div>

@@ -106,12 +106,21 @@ def userhome(user):
 
 @app.route("/logout/<username>")
 def logout(username):
+    print("entered logout")
     session.pop(username, None)
     return redirect(url_for('index'))
 
-@app.route("/bookpage/<id>")
-def bookspage(id):
-    response=db.session.query(Books).filter(Books.isbn==id)
-    return render_template('bookpage.html',book_details=response)
+
+@app.route("/bookpage/<username>/<id>")
+def bookspage(id,username):
+    if username in session.keys():
+        print(session.keys())
+        
+                
+        response=db.session.query(Books).filter(Books.isbn==id).all()
+        return render_template('bookpage.html',book_details=response,username=username)
+    else:
+        return redirect(url_for('index'))
+
 
 
