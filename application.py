@@ -37,9 +37,11 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    if 'username' in session:
+    try:
+        user = session['username']
         return redirect(url_for('home'))
-    return redirect(url_for("register"))
+    except:
+        return redirect(url_for("register"))
 
 
 
@@ -87,8 +89,8 @@ def auth():
 
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
-                session[username] = username
-                return redirect(url_for('userhome',user=username))
+                session['username'] = username
+                return redirect(url_for('userhome'))
             else:
                 return render_template("reg.html", message = "username or password is incorrect")
         else:
@@ -97,29 +99,33 @@ def auth():
     else:
         return "<h1> please login / register</h1>"
 
-@app.route("/home/<user>")
-def userhome(user):
-    if user in session:
-        return render_template("login.html",username = user,message="Sucessfully logged in : welcome!!")
+@app.route("/home")
+def userhome():
+    try:
+        username = session['username']
+    
+        return render_template("login.html",username = username,message="Sucessfully logged in : welcome!!")
+    except:    
+        return redirect(url_for('index'))
 
-    return redirect(url_for('index'))
-
-@app.route("/logout/<username>")
-def logout(username):
+@app.route("/logout")
+def logout():
     print("entered logout")
-    session.pop(username, None)
-    return redirect(url_for('index'))
+    try:
+        session.clear()
+        return redirect(url_for('index'))
+    except:
+        return redirect(url_for('index'))
+    
 
 
-@app.route("/bookpage/<username>/<id>")
-def bookspage(id,username):
-    if username in session.keys():
-        print(session.keys())
-        
-                
+@app.route("/bookpage/<id>")
+def bookspage(id):
+    try:
+        username = session['username']
         response=db.session.query(Books).filter(Books.isbn==id).all()
         return render_template('bookpage.html',book_details=response,username=username)
-    else:
+    except:
         return redirect(url_for('index'))
 
 
