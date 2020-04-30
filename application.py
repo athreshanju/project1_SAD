@@ -41,9 +41,11 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    if 'username' in session:
+    try:
+        user = session['username']
         return redirect(url_for('home'))
-    return redirect(url_for("register"))
+    except:
+        return redirect(url_for("register"))
 
 
 
@@ -59,7 +61,7 @@ def register():
             usr = user(username = Username,email = Email,password = Password,time = time.ctime(time.time()))
             db.session.add(usr)
             db.session.commit()
-            return render_template("pager.html",name = Username,email = Email)
+            return render_template("reg.html",message = "Successfully registered !! please login")
         else:
             
             return render_template("reg.html", message = "email already exists!")
@@ -88,27 +90,30 @@ def auth():
 
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
-                session[username] = username
-                return redirect(url_for('userhome',user=username))
+                session["username"] = username
+                return redirect(url_for('userhome'))
             else:
                 return render_template("reg.html", message = "username or password is incorrect")
         else:
             return redirect(url_for('index'))
 
     else:
-        return "<h1> please login / register</h1>"
+        return redirect(url_for('index'))
 
-@app.route("/home/<user>")
-def userhome(user):
-    if user in session:
+@app.route("/home")
+def userhome():
+    try:
+        user = session['username']
         return render_template("login.html",username = user,message="Sucessfully logged in : welcome!!")
+    except:    
+        return redirect(url_for('index'))
 
-    return redirect(url_for('index'))
-
-@app.route("/logout/<username>")
-def logout(username):
-    if username in session:
-        session.pop(username, None)
+@app.route("/logout")
+def logout():
+    try:
+        session.clear()
+        return redirect(url_for('index'))
+    except:
         return redirect(url_for('index'))
 
 
@@ -117,16 +122,17 @@ def logout(username):
 
 @app.route("/search",methods=["POST","GET"])
 def search():
-    if request.method=="POST":
-        for key in session.keys():
-                username = key
-        if not request.form.get("book"):
-            return render_template("login.html",msg = "please search a book by its title or isbn or author or year",username=username)
-        book = request.form.get("book")
-        bookreq = str(book)
-        booksdata = db.session.query(Books.isbn,Books.title,Books.author,Books.year).filter(or_(Books.title.like("%"+bookreq+"%"),Books.author.like("%"+bookreq+"%"),Books.isbn.like("%"+bookreq+"%"),Books.year.like("%"+bookreq+"%"))).all()
-        if booksdata.__len__()==0:
-            return render_template("login.html",msg = "we could not find books with your search!",username = username)
-        else:
-            return render_template("login.html",books=booksdata,username=username)
-    return render_template("reg.html",message = "please login to view the home page!!")
+    try:
+        username = session['username']
+        if request.method=="POST":
+            if not request.form.get("book"):
+                return render_template("login.html",msg = "please search a book by its title or isbn or author or year",username=username)
+            book = request.form.get("book")
+            bookreq = str(book)
+            booksdata = db.session.query(Books.isbn,Books.title,Books.author,Books.year).filter(or_(Books.title.like("%"+bookreq+"%"),Books.author.like("%"+bookreq+"%"),Books.isbn.like("%"+bookreq+"%"),Books.year.like("%"+bookreq+"%"))).all()
+            if booksdata.__len__()==0:
+                return render_template("login.html",msg = "we could not find books with your search!",username = username)
+            else:
+                return render_template("login.html",books=booksdata,username=username)
+    except:
+        return redirect(url_for('index'))
