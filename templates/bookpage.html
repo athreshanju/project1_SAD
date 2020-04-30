@@ -34,7 +34,7 @@
                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
 
             </ul>
-            <form class="form-inline my-2 my-lg-0"  action="{{ url_for('logout',username=username) }}">
+            <form class="form-inline my-2 my-lg-0"  action="{{ url_for('logout') }}">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout
                 </button>
             </form>
@@ -76,7 +76,7 @@
 
             <body>
                 <div style="display:{{property}}" class="container">
-                    <form action="/bookpage" method="POST">
+                    <form action="/bookpage/{{book.isbn}}" method="POST">
                         <div class="rate">
 
                             <h4 class="starhead">Rating</h4>

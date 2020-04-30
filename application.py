@@ -2,7 +2,8 @@ import os
 import sys
 import time
 from userReview import *
-
+from booksdb import *
+from books import *
 from test import bookreview
 from users import *
 import json
@@ -29,9 +30,12 @@ with app.app_context():
 # Set up database
 @app.route("/")
 def index():
-    if 'username' in session:
+    try:
+        user=session['username']
         return redirect(url_for('home'))
-    return redirect(url_for("register"))
+    except:
+
+        return redirect(url_for("register"))
 
 
 
@@ -75,56 +79,71 @@ def auth():
 
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
-                session[username] = username
-                return redirect(url_for('userhome',user=username))
+                session['username'] = username
+                return redirect(url_for('userhome'))
             else:
                 return render_template("reg.html", message = "username or password is incorrect")
         else:
             return redirect(url_for('index'))
 
     else:
-        return "<h1> please login / register</h1>"
+        return redirect(url_for('index'))
 
-@app.route("/home/<user>")
-def userhome(user):
-    if user in session:
-        return render_template("login.html",username = user,message="Sucessfully logged in : welcome!!")
+@app.route("/home")
+def userhome():
+    try:
+        username=session['username']
+        return render_template("login.html",username = username,message="Sucessfully logged in : welcome!!")
+    except:
+        return redirect(url_for('index'))
 
-    return redirect(url_for('index'))
-
-@app.route("/logout/<username>")
-def logout(username):
+@app.route("/logout")
+def logout():
     print("Entered")
-    session.pop(username, None)
-    return redirect(url_for('index'))
+    try:
+        session.clear()
+        return redirect(url_for('index'))
+    except:
+        return redirect(url_for('index'))
 
-@app.route("/bookpage",methods=["POST","GET"])
-def bookspage():
-    print("Entered in b")
-    for key in session.keys():
-        username = key
-    if request.method == "POST":
-        rating = request.form.get("rating")
-        reviews = request.form.get("review")
-        isbn = book.isbn
-        timestamp = time.ctime(time.time())
-        title = book.title
-        user = review(isbn=isbn, review=reviews, rating=rating,
-                      time_stamp=timestamp, title=title, username=username)
-        db.session.add(user)
-        db.session.commit()
-        # Get all the reviews for the given book.
-        allreviews = review.query.filter_by(isbn=bookisbn).all()
-        return render_template("bookpage.html", res=res, book=book, review=allreviews, property="none", message="You reviewed this book!!")
-    else:
-        allreviews = review.query.filter_by(isbn=bookisbn).all()
-        # database query to check if the user had given review to that paticular book.
-        rev = review.query.filter(
-            review.isbn == bookisbn, review.username == username).first()
-        # if review was not given then dispaly the book page with review button
-        if rev is None:
-            return render_template("bookpage.html", book=book, review=allreviews, res=res,username=username)
+@app.route("/bookpage/<isbn>",methods=["POST","GET"])
+def bookspage(isbn):
+    try:
+        
+        username = session['username']
+        book = db.session.query(Books).filter(Books.isbn==isbn).first()
+        allreviews = review.query.filter_by(isbn=isbn).all()
+        res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "2VIV9mRWiAq0OuKcOPiA", "isbns": book.isbn})
+        data = res.text
+        parsed = json.loads(data)
+        print(parsed)
+        res = {}
+        for i in parsed:
+            for j in (parsed[i]):
+                res = j
+        if request.method == "POST":
+            rating = request.form.get("rating")
+            reviews = request.form.get("review")
+            isbn = book.isbn
+            timestamp = time.ctime(time.time())
+            title = book.title
+            user = review(isbn=isbn, review=reviews, rating=rating,
+                        time_stamp=timestamp, title=title, username=username)
+            db.session.add(user)
+            db.session.commit()
+            # Get all the reviews for the given book.
+            allreviews = review.query.filter_by(isbn=isbn).all()
+            return render_template("bookpage.html", book=book, review=allreviews, property="none", res=res,message="You reviewed this book!!")
         else:
-            return render_template("bookpage.html", book=book, message="You reviewed this book!!", review=allreviews, res=res, property="none",username=username)
-
-
+            # database query to check if the user had given review to that paticular book.
+            rev = review.query.filter(
+                review.isbn == book.isbn, review.username == username).first()
+            # if review was not given then dispaly the book page with review button
+            if rev is None:
+                return render_template("bookpage.html", book=book, review=allreviews,res=res, username=username)
+            else:
+                return render_template("bookpage.html", book=book, message="You reviewed this book!!", review=allreviews,res=res,property="none",username=username)
+    except Exception as e:
+        print(e)
+        return redirect(url_for('index'))
