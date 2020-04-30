@@ -4,6 +4,7 @@ import time
 
 
 from users import *
+from booksdb import *
 
 from flask import Flask, session, render_template, request,redirect,url_for
 from sqlalchemy import create_engine,desc,or_
@@ -39,6 +40,8 @@ with app.app_context():
 
 # Set up database
 
+
+
 @app.route("/")
 def index():
     try:
@@ -46,8 +49,6 @@ def index():
         return redirect(url_for('home'))
     except:
         return redirect(url_for("register"))
-
-
 
 @app.route("/register",methods=["POST","GET"])
 def register():
@@ -67,13 +68,6 @@ def register():
             return render_template("reg.html", message = "email already exists!")
     if request.method == "GET":
         return render_template("reg.html")
-
-
-
-
-
-
-
 
 @app.route("/admin")
 def admin():
@@ -116,10 +110,6 @@ def logout():
     except:
         return redirect(url_for('index'))
 
-
-   
-
-
 @app.route("/search",methods=["POST","GET"])
 def search():
     try:
@@ -136,3 +126,16 @@ def search():
                 return render_template("login.html",books=booksdata,username=username)
     except:
         return redirect(url_for('index'))
+    
+    
+@app.route("/bookpage/<id>")
+def bookspage(id):
+    try:
+        username = session['username']
+        response=db.session.query(Books).filter(Books.isbn==id).all()
+        return render_template('bookpage.html',book_details=response,username=username)
+    except:
+        return redirect(url_for('index'))
+
+
+
