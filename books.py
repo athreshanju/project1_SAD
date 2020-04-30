@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session,sessionmaker
 
 engine = create_engine(os.getenv("DATABASE_URL"))
-db = scoped_session(sessionmaker(bind=engine))
+database = scoped_session(sessionmaker(bind=engine))
 
 def main():
     Base.metadata.create_all(bind=engine)
@@ -13,9 +13,9 @@ def main():
     next(reader)
     for isbn,title,author,year in reader:
         book = Books(isbn=isbn,title=title,author=author,year=int(year))
-        db.add(book)
-    db.commit()
-    db.close()
+        database.add(book)
+    database.commit()
+    database.close()
 
 if __name__ == "__main__":
     main()
