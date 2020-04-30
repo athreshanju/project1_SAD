@@ -103,8 +103,6 @@ def bookspage():
     print("Entered in b")
     for key in session.keys():
         username = key
-    # Get all the reviews for the given book.
-    allreviews = review.query.filter_by(isbn=bookisbn).all()
     if request.method == "POST":
         rating = request.form.get("rating")
         reviews = request.form.get("review")
@@ -119,6 +117,7 @@ def bookspage():
         allreviews = review.query.filter_by(isbn=bookisbn).all()
         return render_template("bookpage.html", res=res, book=book, review=allreviews, property="none", message="You reviewed this book!!")
     else:
+        allreviews = review.query.filter_by(isbn=bookisbn).all()
         # database query to check if the user had given review to that paticular book.
         rev = review.query.filter(
             review.isbn == bookisbn, review.username == username).first()
