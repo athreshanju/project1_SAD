@@ -1,15 +1,11 @@
-<html>
-<head>
+{% extends 'layout.html' %}
 
-		{% extends layout.html %}
 
-	</head>
-	<body>
+
+{% block body %} 
 		<h1>Successfully Registered</h1><br>
 		<h2>username : {{name}}</h2>
 		<h3>Email : {{email}}</h3>
 
 		   
-    </body>
-
-	</html>
+{% endblock %}

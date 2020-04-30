@@ -2,6 +2,8 @@ from sqlalchemy import Column,String,Integer
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
+
+
 class Books(Base):
     __tablename__ = "books"
     isbn = Column(String,primary_key = True)

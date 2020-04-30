@@ -1,12 +1,13 @@
- <html>
- <head>
+{% extends 'layout.html' %}
+{% block links %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="{{url_for('static',filename ='js/Registration.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename ='js/regjavascript.js')}}"></script>
 
+{% endblock %}
 
-    {% extends layout.html %}
+{% block body %}   
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- </head>
- <body>
+    
     <h1>Create an Account Registration</h1>
 
  <section class="section">
@@ -18,7 +19,7 @@
 
                         <p>{{ message }}</p>
                         
-                        <form>
+                        <form name="register">
                               
 
                         
@@ -28,21 +29,29 @@
                                 <div class="input-container">
                                       <i class="fa fa-user icon"></i>
                                         <input class="input-field" type="text" placeholder="Username" name="username" required>
+                                        <p  class="usermessage"></p><br />
+
                                 </div>
 
                                  <div class="input-container">
                                         <i class="fa fa-envelope icon"></i>
-                                         <input class="input-field" type="text" placeholder="Email" name="email" required>
+                                         <input class="input-field" type="email" placeholder="Email" name="email" required>
+                                         <p  class="emailmessage"></p><br />
+
                                  </div>
 
                                  <div class="input-container">
                                          <i class="fa fa-key icon"></i>
 
-                                          <input class="input-field" type="password" placeholder="Password" name="pass" minlength="6" required>
+                                          <input class="input-field" type="password" placeholder="Password" name="pass" required>
+                                          <p  class="passmessage"></p><br />
+
                                  </div>
 
-                                <button type="submit" class="btn" formmethod="POST" formaction=" {{url_for ('User')}}">Register</button><br><br>
-                                <button type="submit" class="btn" formmethod="POST" formaction=" {{url_for ('auth')}}">Login</button>
+                                <button type="submit" class="btn" formmethod="POST" onclick="return validateForm()"
+                                formaction=" {{url_for ('register')}}" >Register</button><br><br>
+                                <button type="submit" class="btn" formmethod="POST" onclick="return validateForm()"
+                                formaction=" {{url_for ('auth')}}">Login</button>
 
 
                         </form>
@@ -52,5 +61,4 @@
         </div>
     </section>
 
-</body>
-</html>
+{% endblock %}

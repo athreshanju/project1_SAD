@@ -1,19 +1,62 @@
-<html>
-<head>
-	{% extends layout.html %}
-    </head>
-    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-            <a class="navbar-brand">{{username}}</a>
+{% extends 'layout.html' %}
+{% block links %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+{% endblock %}
+
+
+{% block body %}  
+    <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" >
+            <a class="navbar-brand">{{message}} {{username}}</a>
             <form class="form-inline">
               
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formaction=" {{url_for ('logout',username=username
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formmethod="GET" formaction=" {{url_for ('logout'
               )}}">Logout</button>
             </form>
           </nav>
-    <body>
-            <p>{{message}}</p>
-            username = {{username}} 
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <form class="card card-sm">
+                    <div class="card-body row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-search h4 text-body"></i>
+                        </div>
+                        
+                        <div class="col">
+                            <input class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search books" name="book">
+                        </div>
+                        
+                        <div class="col-auto">
+                            <button class="btn btn-lg btn-success" type="submit" formmethod="POST" formaction = "{{url_for('search')}}">Search</button>
+                        </div>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>    
+    <h1>Search Results</h1>
+    {{ msg }}
+    
+    <div class="dropdown-divider"></div>
+    
+    <div class="container results-container">
+        
+        {% for book in books %}
+            <div class="card border-primary mb-3" style="width: 12rem">
+                <div class="card-body">
+                    <h4 class="card-title">Title->{{book['title']}}</h4>
+                    <h6 class="card-text">Author->{{book['author']}}</h6>
+                    <h6 class="card-text">Year->{{book['year']}}</h6>
+                    <h6 class="card-text">isbn->{{book['isbn']}}</h6>
+                </div>
+                <div class="card-footer">
+                    <a href="/bookpage/{{book['isbn']}}" class="card-link">Go to book details page</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>       
            
    
-    </body>
-    </html>
+{% endblock %}
