@@ -5,58 +5,38 @@
 
 {% block scripts%}
 <script type="text/javascript"> 
-    
-    
-
-
-  
-
     function search(){
-
-        console.log("Hello")
         var url= "/api/search"
         var searchform = new FormData( document.getElementById("searchform") );
-        console.log(searchform)
         var usersearch = searchform.get("book");
-        console.log(usersearch)
         var responseobj = {}
         responseobj['query'] = usersearch;
         var json = JSON.stringify(responseobj);
-   
-        console.log(json)
         var window = new XMLHttpRequest();
         window.open("POST", url, true);
         window.setRequestHeader('Content-type','application/json; charset=utf-8');
         window.send(json);
         window.onload = function(){
-            console.log("entered function")
             var bookdata = JSON.parse(window.responseText);
             if(window.status == "200"){
-                console.log("Hai")
                 var htmltext = "<h1>Search Results<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
                 "<table class='table table-striped' border = 1 align = 'center' style = 'color: black;'>"+
                 "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'Isbn' }}</th><th> {{ 'Title' }}</th><th> {{ 'Author' }}</th>"+
                 "<th> {{ 'Year' }}</th><th> {{ ' Link to Book' }}</th></tr></thead><tbody>";
-               
                 for(var i = 0; i < bookdata.length; i++) {
-                    console.log("for loop entered")
                     htmltext = htmltext + "<tr>" + "<td>"+bookdata[i]["isbn"] +"</td>"+ "<td>" + bookdata[i]["title"] +"</td>"+
                     "<td>" + bookdata[i]["author"] +"</td>"+ "<td>" + bookdata[i]["year"] +"</td><td><button onclick = 'bookpage(this)' id = "+
               bookdata[i]["isbn"] + ">View Book</button></td></tr>"
                 }
-                console.log("athresh")
                 htmltext = htmltext + "</h1></tbody></table></div></div>"
-                
-                console.log(htmltext)
-                console.log(document.getElementById("userresultsforsearch"))
                 document.getElementById("userresultsforsearch").innerHTML=htmltext;
             }
             else {
                 if (window.status == 404) {
-                    var errormessage = "<br><h1 style = 'text-align:center'>No search Results found!!</h1>"
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
                 }
                 else if (window.status == 500) {
-                    var errormessage = "<br><h1 style = 'text-align:center'>Please Try again!!</h1>"
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
                 }
                 document.getElementById("userresultsforsearch").innerHTML=errormessage;
             }
