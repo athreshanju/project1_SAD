@@ -2,7 +2,7 @@ import os
 import sys
 import time
 from users import *
-from flask import Flask, session, render_template, request,redirect,url_for
+from flask import Flask, session, render_template, request,redirect,url_for,jsonify
 from sqlalchemy import create_engine,desc,or_
 from booksdb import *
 import requests
@@ -71,7 +71,6 @@ def auth():
         password = request.form.get("pass")
 
         userdata = user.query.filter_by(username=username).first()
-
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
                 session["username"] = username
@@ -158,3 +157,41 @@ def bookspage(isbn):
     except Exception as e:
         print(e)
         return redirect(url_for('index'))
+
+@app.route('/api/submit_review', methods=['POST'])
+def review_api():
+    if not request.is_json:
+        message = "Invalid request format"
+        return jsonify(message),400
+    isbn=request.args.get('isbn')
+    try:
+        result = db.session.query(Books).filter(Books.isbn == isbn).first()
+    except:
+        message = "Please Try again Later"
+        return jsonify(message),500
+    if result is None:
+        message = "Please enter valid ISBN"
+        return jsonify(message), 404
+    rating = request.get_json()['rating']
+    rev= request.get_json()['review']
+    username = request.get_json()['username']
+    timestamp = time.ctime(time.time())
+    title = result.title
+    user = review.query.filter_by(username=username,isbn=isbn).first()
+    if user is not None:
+        message = "Sorry you can't review this book again"
+        return jsonify(message), 409
+    reviewdata=review(isbn=isbn, review=rev, rating=rating,
+                        time_stamp=timestamp, title=title, username=username)
+    # print(reviewdata)
+    try:
+        # print("hello")
+        db.session.add(reviewdata)
+        # print("hi")
+        db.session.commit()
+        # print("hello hi")
+    except:
+        message = "Please Try Again "
+        return jsonify(message), 500
+    message = "Review submitted successfully"
+    return jsonify(message), 200
