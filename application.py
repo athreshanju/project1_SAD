@@ -10,6 +10,7 @@ from userReview import *
 from books import *
 from test import bookreview
 import json
+from flask import jsonify
 from flask import Flask, session, render_template, request,redirect,url_for
 
 # app = Flask(__name__, static_url_path='/static')
@@ -71,6 +72,7 @@ def auth():
         password = request.form.get("pass")
 
         userdata = user.query.filter_by(username=username).first()
+        print (userdata)
 
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
@@ -89,7 +91,8 @@ def userhome():
     try:
         user = session['username']
         return render_template("login.html",username = user,message="Sucessfully logged in : welcome!!")
-    except:    
+    except Exception as e:
+        print (e)    
         return redirect(url_for('index'))
 
 @app.route("/logout")
@@ -158,3 +161,39 @@ def bookspage(isbn):
     except Exception as e:
         print(e)
         return redirect(url_for('index'))
+
+#Second api route - Book page
+@app.route('/api/book')
+def apibook():
+    query = request.args.get('isbn')
+    try:
+        result = db.session.query(Books).filter(Books.isbn == query).first()
+        r=review.query.filter_by(isbn=query).all()
+    except Exception as e:
+        print(e)
+        message = "Please Try again Later"
+        return jsonify(message),500
+    print(result)
+    if result is None:
+        message = "No book found"
+        return jsonify(message), 404
+    response = {}
+    reviews = []
+    for reviewes in r:
+        eachreview = {}
+        eachreview["email"] = reviewes.username
+        eachreview["rating"] = reviewes.rating
+        eachreview["comment"] = reviewes.review
+        reviews.append(eachreview)
+    response['isbn'] = result.isbn
+    response['title'] = result.title
+    response['author'] = result.author
+    response['year'] = result.year
+    response['reviews'] = reviews
+    return jsonify(response), 200
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+
