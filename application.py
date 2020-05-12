@@ -183,13 +183,9 @@ def review_api():
         return jsonify(message), 409
     reviewdata=review(isbn=isbn, review=rev, rating=rating,
                         time_stamp=timestamp, title=title, username=username)
-    # print(reviewdata)
     try:
-        # print("hello")
         db.session.add(reviewdata)
-        # print("hi")
         db.session.commit()
-        # print("hello hi")
     except:
         message = "Please Try Again "
         return jsonify(message), 500

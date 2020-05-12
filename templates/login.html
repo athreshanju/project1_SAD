@@ -36,8 +36,6 @@ function reviewform() {
     }else if (http.status == 409) {
       var errormessage = "<br><br><h3 style = 'text-align:center'>Error:user had already given rating</h3>"
     }
-    // console.log(errormessage)
-    // console.log(data)
     document.getElementById("review").innerHTML=errormessage;
   }
 }
