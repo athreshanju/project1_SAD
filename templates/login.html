@@ -6,19 +6,15 @@
 <script type ="text/javascript">
 
 function bookdisplay(ele){
-  console.log(ele)
-  console.log("entered function")
   var requestobj = {}
   requestobj["isbn"] = ele
   var url= "/api/book?isbn="+ele
-  console.log("entered here")
   var xhttps = new XMLHttpRequest()
   xhttps.open('GET',url)
   xhttps.send()  
   xhttps.onload = function() {
     var data = JSON.parse(xhttps.responseText);
     if (xhttps.status=="200"){
-      console.log(data.reviews)
       var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
     
     for(var i = 0; i < data.reviews.length; i++) {
