@@ -2,8 +2,53 @@
 {% block links %}
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 {% endblock %}
-{% block scripts %}
+
+
+
+
+  
+
+{% block scripts%}
 <script type="text/javascript"> 
+    function search(){
+        var url= "/api/search"
+        var searchform = new FormData( document.getElementById("searchform") );
+        var usersearch = searchform.get("book");
+        var responseobj = {}
+        responseobj['query'] = usersearch;
+        var json = JSON.stringify(responseobj);
+        var window = new XMLHttpRequest();
+        window.open("POST", url, true);
+        window.setRequestHeader('Content-type','application/json; charset=utf-8');
+        window.send(json);
+        window.onload = function(){
+            var bookdata = JSON.parse(window.responseText);
+            if(window.status == "200"){
+                var htmltext = "<h1>Search Results<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
+                "<table class='table table-striped' border = 1 align = 'center' style = 'color: black;'>"+
+                "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'Isbn' }}</th><th> {{ 'Title' }}</th><th> {{ 'Author' }}</th>"+
+                "<th> {{ 'Year' }}</th><th> {{ ' Link to Book' }}</th></tr></thead><tbody>";
+                for(var i = 0; i < bookdata.length; i++) {
+                    htmltext = htmltext + "<tr>" + "<td>"+bookdata[i]["isbn"] +"</td>"+ "<td>" + bookdata[i]["title"] +"</td>"+
+                    "<td>" + bookdata[i]["author"] +"</td>"+ "<td>" + bookdata[i]["year"] +"</td><td><button onclick = 'bookpage(this)' id = "+
+              bookdata[i]["isbn"] + ">View Book</button></td></tr>"
+                }
+                htmltext = htmltext + "</h1></tbody></table></div></div>"
+                document.getElementById("userresultsforsearch").innerHTML=htmltext;
+            }
+            else {
+                if (window.status == 404) {
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
+                }
+                else if (window.status == 500) {
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
+                }
+                document.getElementById("userresultsforsearch").innerHTML=errormessage;
+            }
+        }
+        
+    }
+                                                   
 function reviewform() {
   var param = "0743484355";
   var url = '/api/submit_review?isbn='+param;
@@ -14,12 +59,11 @@ function reviewform() {
   requestobj['rating'] = rating
   requestobj['review'] =review
   requestobj['username'] =document.getElementById("username").innerText
-
   var json = JSON.stringify(requestobj);
   var http = new XMLHttpRequest();
   http.open("POST", url);
   http.setRequestHeader('Content-Type','application/json');
-
+                                                   
   http.send(json);
   http.onload = function () {
   var data = JSON.parse(http.responseText);
@@ -43,13 +87,18 @@ function reviewform() {
 </script>
 {% endblock %}
 {% block body %}  
+
     <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" >
             <a class="navbar-brand" id ="username" > {{username}}</a>
+
+   
+
             <form class="form-inline">
               
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formmethod="GET" formaction=" {{url_for ('logout'
               )}}">Logout</button>
             </form>
+
           </nav>
      <div style="display:{{property}}" class="container">
                     <form class="example" id = "submitreview" onsubmit="event.preventDefault(); reviewform()">
@@ -68,6 +117,19 @@ function reviewform() {
                             <input type="radio" id="star1" name="rating" value="1" />
                             <label for="star1" title="text">1 star</label>
 
+
+    
+
+    
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <form class="card card-sm" id="searchform" onsubmit="event.preventDefault(); search()">
+                    <div class="card-body row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-search h4 text-body"></i>
+
                         </div>
 
                         <div id="text" class="row">
@@ -77,10 +139,27 @@ function reviewform() {
                             </div>
                         </div>
 
+
                         <div class="row">
                             <input class="bttn" type="submit" value="Submit">
                         </div>
 
                     </form>                
 <div id = "review"></div>
+
+                        
+                        <div class="col-auto">
+                            <button class="btn btn-lg btn-success" type="submit" >Search</button>
+                        </div>
+                            
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>    
+   
+           
+<div id = "userresultsforsearch"></div>
+
 {% endblock %}
