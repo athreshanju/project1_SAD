@@ -3,21 +3,66 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 {% endblock %}
 
+{% block scripts%}
+<script type="text/javascript"> 
+    function search(){
+        var url= "/api/search"
+        var searchform = new FormData( document.getElementById("searchform") );
+        var usersearch = searchform.get("book");
+        var responseobj = {}
+        responseobj['query'] = usersearch;
+        var json = JSON.stringify(responseobj);
+        var window = new XMLHttpRequest();
+        window.open("POST", url, true);
+        window.setRequestHeader('Content-type','application/json; charset=utf-8');
+        window.send(json);
+        window.onload = function(){
+            var bookdata = JSON.parse(window.responseText);
+            if(window.status == "200"){
+                var htmltext = "<h1>Search Results<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
+                "<table class='table table-striped' border = 1 align = 'center' style = 'color: black;'>"+
+                "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'Isbn' }}</th><th> {{ 'Title' }}</th><th> {{ 'Author' }}</th>"+
+                "<th> {{ 'Year' }}</th><th> {{ ' Link to Book' }}</th></tr></thead><tbody>";
+                for(var i = 0; i < bookdata.length; i++) {
+                    htmltext = htmltext + "<tr>" + "<td>"+bookdata[i]["isbn"] +"</td>"+ "<td>" + bookdata[i]["title"] +"</td>"+
+                    "<td>" + bookdata[i]["author"] +"</td>"+ "<td>" + bookdata[i]["year"] +"</td><td><button onclick = 'bookpage(this)' id = "+
+              bookdata[i]["isbn"] + ">View Book</button></td></tr>"
+                }
+                htmltext = htmltext + "</h1></tbody></table></div></div>"
+                document.getElementById("userresultsforsearch").innerHTML=htmltext;
+            }
+            else {
+                if (window.status == 404) {
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
+                }
+                else if (window.status == 500) {
+                    var errormessage = "<br><h1 style = 'text-align:center'>"+ bookdata + "</h1>"
+                }
+                document.getElementById("userresultsforsearch").innerHTML=errormessage;
+            }
+        }
+        
+    }
+</script>
+{% endblock %}
+
 
 {% block body %}  
-    <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" >
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;" >
             <a class="navbar-brand">{{message}} {{username}}</a>
             <form class="form-inline">
               
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formmethod="GET" formaction=" {{url_for ('logout'
               )}}">Logout</button>
             </form>
-          </nav>
+    </nav>
+
+    
     
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-md-10 col-lg-8">
-                <form class="card card-sm">
+                <form class="card card-sm" id="searchform" onsubmit="event.preventDefault(); search()">
                     <div class="card-body row no-gutters align-items-center">
                         <div class="col-auto">
                             <i class="fas fa-search h4 text-body"></i>
@@ -28,35 +73,16 @@
                         </div>
                         
                         <div class="col-auto">
-                            <button class="btn btn-lg btn-success" type="submit" formmethod="POST" formaction = "{{url_for('search')}}">Search</button>
+                            <button class="btn btn-lg btn-success" type="submit" >Search</button>
                         </div>
-                        
+                            
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>    
-    <h1>Search Results</h1>
-    {{ msg }}
-    
-    <div class="dropdown-divider"></div>
-    
-    <div class="container results-container">
-        
-        {% for book in books %}
-            <div class="card border-primary mb-3" style="width: 12rem">
-                <div class="card-body">
-                    <h4 class="card-title">Title->{{book['title']}}</h4>
-                    <h6 class="card-text">Author->{{book['author']}}</h6>
-                    <h6 class="card-text">Year->{{book['year']}}</h6>
-                    <h6 class="card-text">isbn->{{book['isbn']}}</h6>
-                </div>
-                <div class="card-footer">
-                    <a href="/bookpage/{{book['isbn']}}" class="card-link">Go to book details page</a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>       
-           
    
+           
+<div id = "userresultsforsearch"></div>
 {% endblock %}

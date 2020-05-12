@@ -2,7 +2,7 @@ import os
 import sys
 import time
 from users import *
-from flask import Flask, session, render_template, request,redirect,url_for
+from flask import Flask, session, render_template, request,redirect,url_for,jsonify
 from sqlalchemy import create_engine,desc,or_
 from booksdb import *
 import requests
@@ -158,3 +158,30 @@ def bookspage(isbn):
     except Exception as e:
         print(e)
         return redirect(url_for('index'))
+
+@app.route('/api/search', methods = ["POST"])
+def apisearch():
+    print(request)
+    print(request.is_json)
+    if not request.is_json:
+        message = "Invalid request format"
+        return jsonify(message),400
+    reqs = request.get_json()['query']
+    try:
+        booksdata = db.session.query(Books.isbn,Books.title,Books.author,Books.year).filter(or_(Books.title.like("%"+reqs+"%"),Books.author.like("%"+reqs+"%"),Books.isbn.like("%"+reqs+"%"),Books.year.like("%"+reqs+"%"))).all()
+    except:
+        message = "Please Try again Later"
+        return jsonify(message), 500
+    print(booksdata)
+    if booksdata.__len__()==0:
+        message = "No search results found"
+        return jsonify(message),404
+    response = []
+    for book in booksdata:
+        dictionary = {}
+        dictionary["isbn"] = book[0]
+        dictionary['title'] = book[1]
+        dictionary['author'] = book[2]
+        dictionary['year'] = book[3]
+        response.append(dictionary)
+    return jsonify(response) , 200
