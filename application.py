@@ -2,7 +2,7 @@ import os
 import sys
 import time
 from users import *
-from flask import Flask, session, render_template, request,redirect,url_for
+from flask import Flask, session, render_template, request,redirect,url_for,jsonify
 from sqlalchemy import create_engine,desc,or_
 from booksdb import *
 import requests
@@ -72,8 +72,6 @@ def auth():
         password = request.form.get("pass")
 
         userdata = user.query.filter_by(username=username).first()
-        print (userdata)
-
         if userdata is not None:
             if userdata.username == username and userdata.password == password:
                 session["username"] = username
@@ -162,6 +160,7 @@ def bookspage(isbn):
         print(e)
         return redirect(url_for('index'))
 
+<<<<<<< HEAD
 #Second api route - Book page
 @app.route('/api/book')
 def apibook():
@@ -193,7 +192,64 @@ def apibook():
     return jsonify(response), 200
 
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
 
+@app.route('/api/submit_review', methods=['POST'])
+def review_api():
+    if not request.is_json:
+        message = "Invalid request format"
+        return jsonify(message),400
+    isbn=request.args.get('isbn')
+    try:
+        result = db.session.query(Books).filter(Books.isbn == isbn).first()
+    except:
+        message = "Please Try again Later"
+        return jsonify(message),500
+    if result is None:
+        message = "Please enter valid ISBN"
+        return jsonify(message), 404
+    rating = request.get_json()['rating']
+    rev= request.get_json()['review']
+    username = request.get_json()['username']
+    timestamp = time.ctime(time.time())
+    title = result.title
+    user = review.query.filter_by(username=username,isbn=isbn).first()
+    if user is not None:
+        message = "Sorry you can't review this book again"
+        return jsonify(message), 409
+    reviewdata=review(isbn=isbn, review=rev, rating=rating,
+                        time_stamp=timestamp, title=title, username=username)
+    try:
+        db.session.add(reviewdata)
+        db.session.commit()
+    except:
+        message = "Please Try Again "
+        return jsonify(message), 500
+    message = "Review submitted successfully"
+    return jsonify(message), 200
+  
+@app.route('/api/search', methods = ["POST"])
+def apisearch():
+    print(request)
+    print(request.is_json)
+    if not request.is_json:
+        message = "Invalid request format"
+        return jsonify(message),400
+    reqs = request.get_json()['query']
+    try:
+        booksdata = db.session.query(Books.isbn,Books.title,Books.author,Books.year).filter(or_(Books.title.like("%"+reqs+"%"),Books.author.like("%"+reqs+"%"),Books.isbn.like("%"+reqs+"%"),Books.year.like("%"+reqs+"%"))).all()
+    except:
+        message = "Please Try again Later"
+        return jsonify(message), 500
+    print(booksdata)
+    if booksdata.__len__()==0:
+        message = "No search results found"
+        return jsonify(message),404
+    response = []
+    for book in booksdata:
+        dictionary = {}
+        dictionary["isbn"] = book[0]
+        dictionary['title'] = book[1]
+        dictionary['author'] = book[2]
+        dictionary['year'] = book[3]
+        response.append(dictionary)
+    return jsonify(response) , 200
