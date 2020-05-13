@@ -163,15 +163,18 @@ def bookspage(isbn):
 
 @app.route('/api/book')
 def apibook():
-    query = request.args.get('isbn')
+    bookrequest = request.args.get('isbn')
+    
     try:
-        result = db.session.query(Books).filter(Books.isbn == query).first()
-        r=review.query.filter_by(isbn=query).all()
+        result = db.session.query(Books).filter(Books.isbn == bookrequest).first()
+        
+        r=review.query.filter_by(isbn=bookrequest).all()
+        
     except Exception as e:
         print(e)
         message = "Please Try again Later"
         return jsonify(message),500
-    print(result)
+    
     if result is None:
         message = "No book found"
         return jsonify(message), 404
@@ -194,10 +197,12 @@ def apibook():
 
 @app.route('/api/submit_review', methods=['POST'])
 def review_api():
+    print("entered route")
     if not request.is_json:
         message = "Invalid request format"
         return jsonify(message),400
     isbn=request.args.get('isbn')
+    print(isbn)
     try:
         result = db.session.query(Books).filter(Books.isbn == isbn).first()
     except:
@@ -228,8 +233,8 @@ def review_api():
   
 @app.route('/api/search', methods = ["POST"])
 def apisearch():
-    print(request)
-    print(request.is_json)
+    # print(request)
+    # print(request.is_json)
     if not request.is_json:
         message = "Invalid request format"
         return jsonify(message),400
@@ -239,7 +244,7 @@ def apisearch():
     except:
         message = "Please Try again Later"
         return jsonify(message), 500
-    print(booksdata)
+    # print(booksdata)
     if booksdata.__len__()==0:
         message = "No search results found"
         return jsonify(message),404

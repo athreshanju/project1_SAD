@@ -15,8 +15,9 @@ function bookdisplay(ele){
   xhttps.onload = function() {
     var data = JSON.parse(xhttps.responseText);
     if (xhttps.status=="200"){
-      var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
-    
+      var htmltext = "<p id = 'isbnofbook'>"+'<ul>'+"<h3> 'Here are the book details' </h3>"+'</ul>'+'<ul>'+"isbn no.--"+data.isbn +'</ul>'+'<ul>'+"title--"+data.title+'</ul>'+'<ul>'+"Author--"+data.author+'</ul>'+'<ul>'+"Year--"+data.year+"</p><ul>";
+      // var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
+
     for(var i = 0; i < data.reviews.length; i++) {
              
 
@@ -64,7 +65,7 @@ function bookdisplay(ele){
                 "<th> {{ 'Year' }}</th><th> {{ ' Link to Book' }}</th></tr></thead><tbody>";
                 for(var i = 0; i < bookdata.length; i++) {
                     htmltext = htmltext + "<tr>" + "<td>"+bookdata[i]["isbn"] +"</td>"+ "<td>" + bookdata[i]["title"] +"</td>"+
-                    "<td>" + bookdata[i]["author"] +"</td>"+ "<td>" + bookdata[i]["year"] +"</td><td><button onclick = 'bookdisplay(this)' id = "+
+                    "<td>" + bookdata[i]["author"] +"</td>"+ "<td>" + bookdata[i]["year"] +"</td><td><button onclick = 'bookdisplay(id)' id = "+
               bookdata[i]["isbn"] + ">View Book</button></td></tr>"
                 }
                 htmltext = htmltext + "</h1></tbody></table></div></div>"
@@ -84,8 +85,10 @@ function bookdisplay(ele){
     }
                                                    
 function reviewform() {
-  var param = "0743484355";
-  var url = '/api/submit_review?isbn='+param;
+  
+  var isbn = document.getElementById("isbnofbook").innerText;
+  console.log(isbn)
+  var url = '/api/submit_review?isbn='+isbn;
   var form = new FormData(document.getElementById("submitreview"));  
   var review = form.get("review")
   var rating = form.get("rating")
@@ -175,7 +178,7 @@ function reviewform() {
                   <form class="example" id = "submitreview" onsubmit="event.preventDefault(); reviewform()">
                       <div class="rate">
 
-                          <h4 class="starhead">Rating</h4>
+                          <h4 class="starhead">Please provide Rating for this book</h4>
 
                           <input type="radio" id="star5" name="rating" value="5" />
                           <label for="star5" title="text">5 stars</label>
@@ -197,6 +200,8 @@ function reviewform() {
                         <div class="row">
                           <input class="bttn" type="submit" value="Submit">
                       </div>
+
+                      <div id = "review"></div>
             </div>
         </div>
     </div>    
@@ -204,5 +209,5 @@ function reviewform() {
            
 
 
-<div id = "review"></div>
+
 {% endblock %}
