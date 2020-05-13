@@ -160,8 +160,7 @@ def bookspage(isbn):
         print(e)
         return redirect(url_for('index'))
 
-<<<<<<< HEAD
-#Second api route - Book page
+
 @app.route('/api/book')
 def apibook():
     query = request.args.get('isbn')
