@@ -228,8 +228,31 @@ def review_api():
     except:
         message = "Please Try Again "
         return jsonify(message), 500
-    message = "Review submitted successfully"
-    return jsonify(message), 200
+    try:
+        result = db.session.query(Books).filter(Books.isbn == isbn).first()
+        r=review.query.filter_by(isbn=isbn).all()
+    except:
+        message = "Please Try again Later"
+        return jsonify(message),500
+    print(result)
+    if result is None:
+        message = "No book found"
+        return jsonify(message), 404
+    response = {}
+    reviews = []
+    for revieww in r:
+        eachreview = {}
+        eachreview["username"] = revieww.username
+        eachreview["rating"] = revieww.rating
+        eachreview["review"] = revieww.review
+        reviews.append(eachreview)
+    response['isbn'] = result.isbn
+    response['title'] = result.title
+    response['author'] = result.author
+    response['year'] = result.year
+    response['reviews'] = reviews
+    # message = "Review submitted successfully"
+    return jsonify(response), 200
   
 @app.route('/api/search', methods = ["POST"])
 def apisearch():

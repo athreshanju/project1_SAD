@@ -15,8 +15,8 @@ function bookdisplay(ele){
   xhttps.onload = function() {
     var data = JSON.parse(xhttps.responseText);
     if (xhttps.status=="200"){
-      var htmltext = "<p id = 'isbnofbook'>"+'<ul>'+"<h3> 'Here are the book details' </h3>"+'</ul>'+'<ul>'+"isbn no.--"+data.isbn +'</ul>'+'<ul>'+"title--"+data.title+'</ul>'+'<ul>'+"Author--"+data.author+'</ul>'+'<ul>'+"Year--"+data.year+"</p><ul>";
-      // var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
+      // var htmltext = "<p id = 'isbnofbook'>"+'<ul>'+"<h3> 'Here are the book details' </h3>"+'</ul>'+'<ul>'+"isbn no.--"+data.isbn +'</ul>'+'<ul>'+"title--"+data.title+'</ul>'+'<ul>'+"Author--"+data.author+'</ul>'+'<ul>'+"Year--"+data.year+"</p><ul>";
+      var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
 
     for(var i = 0; i < data.reviews.length; i++) {
              
@@ -105,8 +105,15 @@ function reviewform() {
   http.onload = function () {
   var data = JSON.parse(http.responseText);
   if (http.status == "200") {
-    var html = data;
-    document.getElementById("review").innerHTML=html;
+    var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
+
+    for(var i = 0; i < data.reviews.length; i++) {
+         
+
+          htmltext = htmltext + "<li><p>" + data.reviews[i]["username"] + " ===> " + data.reviews[i]["review"] +"</p></li>"
+        }
+    htmltext = htmltext + "</ul>"
+    document.getElementById("review").innerHTML=htmltext;
    
   }
   else {
@@ -115,6 +122,7 @@ function reviewform() {
     } else if (http.status == 500) {
       var errormessage = "<br><br><h3 style = 'text-align:center'>Please Try again after some time</h3>"
     }else if (http.status == 409) {
+      console.log(data)
       var errormessage = "<br><br><h3 style = 'text-align:center'>Error:user had already given rating</h3>"
     }
     document.getElementById("review").innerHTML=errormessage;
