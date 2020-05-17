@@ -58,3 +58,6 @@ h1{
   outline: none;
   box-shadow: none;
 }
+#reviewcontainer {
+  display: none;
+}

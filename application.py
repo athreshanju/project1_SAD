@@ -191,6 +191,7 @@ def apibook():
     response['author'] = result.author
     response['year'] = result.year
     response['reviews'] = reviews
+    print(response)
     return jsonify(response), 200
 
 
@@ -242,9 +243,9 @@ def review_api():
     reviews = []
     for revieww in r:
         eachreview = {}
-        eachreview["username"] = revieww.username
+        eachreview["email"] = revieww.username
         eachreview["rating"] = revieww.rating
-        eachreview["review"] = revieww.review
+        eachreview["comment"] = revieww.review
         reviews.append(eachreview)
     response['isbn'] = result.isbn
     response['title'] = result.title
@@ -252,6 +253,7 @@ def review_api():
     response['year'] = result.year
     response['reviews'] = reviews
     # message = "Review submitted successfully"
+    print(response)
     return jsonify(response), 200
   
 @app.route('/api/search', methods = ["POST"])
