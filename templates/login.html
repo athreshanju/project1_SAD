@@ -7,6 +7,7 @@
 <script type ="text/javascript">
 
 function bookdisplay(ele){
+  document.getElementById("reviewcontainer").style.display = "none";
   var requestobj = {}
   requestobj["isbn"] = ele
   var url= "/api/book?isbn="+ele
@@ -16,14 +17,12 @@ function bookdisplay(ele){
   xhttps.onload = function() {
     var data = JSON.parse(xhttps.responseText);
     if (xhttps.status=="200"){
-      // var htmltext = "<p id = 'isbnofbook'>"+'<ul>'+"<h3> 'Here are the book details' </h3>"+'</ul>'+'<ul>'+"isbn no.--"+data.isbn +'</ul>'+'<ul>'+"title--"+data.title+'</ul>'+'<ul>'+"Author--"+data.author+'</ul>'+'<ul>'+"Year--"+data.year+"</p><ul>";
-      //var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
-      var htmltext= "<p id = 'isbnofbook'>"+"<h1>Bookdetails<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
+    
+      var htmltext= "<h1>Bookdetails<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
                 "<table class='table table-striped' border = 1 align = 'center' style = 'color: blue;'>"+
-                "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'isbn' }}</th><th> {{ 'title' }}</th><th> {{ 'author' }}</th>"+
-                "<th> {{ 'year' }}</th></tr></thead><tbody>"+
-                "<tr>" + "<td>"+data.isbn +"</td>"+ "<td>" + data.title +"</td>"+
-                    "<td>" + data.author +"</td>"+ "<td>" + data.year;
+                "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'isbn' }}</th><th> {{ 'title' }}</th><th> {{ 'author' }}</th><th> {{ 'year' }}</th>"+
+                "<th> {{ 'reviews' }}</tr></thead><tbody>"+"<tr>" + "<td><span id = 'isbnofbook'>"+data.isbn +"</span></td>"+ "<td>" + data.title +"</td>"+
+                    "<td>" + data.author +"</td>"+ "<td>" + data.year + "</td>"+ "<td>";
 
           
       
@@ -36,14 +35,13 @@ function bookdisplay(ele){
        
              
               
-        //htmltext = htmltext + "<li><p>" + data.reviews[i]["email"]  + data.reviews[i]["comment"] +"</p></li>"
         htmltext= htmltext + "<div><div class='card ' style='width: 20rem; background-color: lightgreen;'>"+
-                        "<div class='card-body'><h4 class='card-title' style = 'color:black'>Username:"+data.reviews[i]["email"]+"</h4><h5 class='card-subtitle mb-2 text-muted' style = 'color:black'>Rating: "+data.reviews[i]["rating"]+
-                        "</h5><p class='card-text' style = 'color:black'>Comment: "+data.reviews[i]["comment"]+"</p></div></div></div>"      
+                        "<div class='card-body'><h4 class='card-title' style = 'color:black'>Username:"+data.reviews[i]["username"]+"</h4><h5 class='card-subtitle mb-2 text-muted' style = 'color:black'>Rating: "+data.reviews[i]["rating"]+
+                        "</h5><p class='card-text' style = 'color:black'>Review: "+data.reviews[i]["review"]+"</p></div></div></div>"      
       }
-            htmltext = htmltext + "</p></h1></tbody></table></div></div>"
+            htmltext = htmltext + "</h1></tbody></table></div></div>"
             document.getElementById("reviewresults").innerHTML=htmltext;
-            // document.getElementById("reviewcontainer").style.display = "block";
+            document.getElementById("reviewcontainer").style.display = "block";
     } else {
       if (xhttps.status == 404){
         var text = "<ul>"+data+"</ul>"
@@ -65,6 +63,8 @@ function bookdisplay(ele){
 
  
     function search(){
+        document.getElementById("reviewcontainer").style.display = "none";
+        document.getElementById("reviewresults").innerHTML="";
         var url= "/api/search"
         var searchform = new FormData( document.getElementById("searchform") );
         var usersearch = searchform.get("book");
@@ -89,6 +89,7 @@ function bookdisplay(ele){
                 }
                 htmltext = htmltext + "</h1></tbody></table></div></div>"
                 document.getElementById("userresultsforsearch").innerHTML=htmltext;
+
             }
             else {
                 if (window.status == 404) {
@@ -106,60 +107,56 @@ function bookdisplay(ele){
 function reviewform() {
   
   var isbn = document.getElementById("isbnofbook").innerText;
-  console.log(isbn)
+  
   var url = '/api/submit_review?isbn='+isbn;
   var form = new FormData(document.getElementById("submitreview"));  
   var review = form.get("review")
   var rating = form.get("rating")
   requestobj = {}
   requestobj['rating'] = rating
-  requestobj['comment'] =review
-  requestobj['email'] =document.getElementById("username").innerText
+  requestobj['review'] =review
+  requestobj['username'] =document.getElementById("username").innerText
   var json = JSON.stringify(requestobj);
   var http = new XMLHttpRequest();
   http.open("POST", url);
   http.setRequestHeader('Content-Type','application/json');
-  console.log(json)                                                 
+                                                 
   http.send(json);
   http.onload = function () {
   var data = JSON.parse(http.responseText);
   if (http.status == "200") {
-    var htmltext= "<p id = 'isbnofbook'>"+"<h1>Bookdetails<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
+    var htmltext= "<h1>Bookdetails<br>"+"<br><div class = 'container'> <div class = 'tableFixHead'>"+
                 "<table class='table table-striped' border = 1 align = 'center' style = 'color: blue;'>"+
                 "<thead class='thead-dark' style='color: white;'><tr><th> {{ 'isbn' }}</th><th> {{ 'title' }}</th><th> {{ 'author' }}</th>"+
                 "<th> {{ 'year' }}</th></tr></thead><tbody>"+
-                "<tr>" + "<td>"+data.isbn +"</td>"+ "<td>" + data.title +"</td>"+
+                "<tr>" + "<td><span id = 'isbnofbook'>"+data.isbn +"</span></td>"+ "<td>" + data.title +"</td>"+
                     "<td>" + data.author +"</td>"+ "<td>" + data.year;
     
-    for(var i = 0; i < data.revieww.length; i++) {
+    for(var i = 0; i < data.reviews.length; i++) {
 
       
 
 
-      // htmltext = htmltext + "<li><p>" + data.reviews[i]["email"]  + data.reviews[i]["comment"] +"</p></li>"
+      
       htmltext= htmltext + "<div><div class='card ' style='width: 20rem; background-color: lightgreen;'>"+
-                        "<div class='card-body'><h4 class='card-title' style = 'color:black'>Username:"+data.revieww[i]["email"]+"</h4><h5 class='card-subtitle mb-2 text-muted' style = 'color:black'>Rating: "+data.revieww[i]["rating"]+
-                        "</h5><p class='card-text' style = 'color:black'>Comment: "+data.revieww[i]["comment"]+"</p></div></div></div>"      
+                        "<div class='card-body'><h4 class='card-title' style = 'color:black'>Username:"+data.reviews[i]["username"]+"</h4><h5 class='card-subtitle mb-2 text-muted' style = 'color:black'>Rating: "+data.reviews[i]["rating"]+
+                        "</h5><p class='card-text' style = 'color:black'>Comment: "+data.reviews[i]["review"]+"</p></div></div></div>"      
     }
-    htmltext = htmltext + "</p></h1></tbody></table></div></div>"
-    document.getElementById("review").innerHTML=htmltext;
-    // document.getElementById("reviewcontainer").style.display = "block";
+    htmltext = htmltext + "</h1></tbody></table></div></div>"
+    document.getElementById("reviewresults").innerHTML=htmltext;
+    
    
   }
   else {
-    var htmltext = "<p id = 'isbnofbook'>"+data.isbn +'<ul>'+data.title+'</ul>'+'<ul>'+data.author+'</ul>'+'<ul>'+data.year+"</p><ul>";
-
-    for(var i = 0; i < data.revieww.length; i++) {
-      htmltext = htmltext + "<li><p>" + data.revieww[i]["username"] + " ===> " + data.revieww[i]["review"] +"</p></li>"
-    }
-    htmltext = htmltext + "</ul>"
+    
+    htmltext = ""
     if (http.status == 404) {
       var errormessage = htmltext + "<br><br><h3 style = 'text-align:center'>No Book Results found</h3>"
     } else if (http.status == 500) {
       var errormessage = htmltext + "<br><br><h3 style = 'text-align:center'>Please Try again after some time</h3>"
     }else if (http.status == 409) {
       console.log("entered 409")
-      htmltext = htmltext + "<br><br><h3 style = 'text-align:center'>Error:user had already given rating</h3>"
+      htmltext = htmltext + "<br><br><h1 style = 'text-align:center'>Error:You had already reviewed this book</h1>"
     }
     document.getElementById("review").innerHTML=htmltext;
     
@@ -218,8 +215,8 @@ function reviewform() {
                 <div id = "userresultsforsearch"></div>
 
                 <div id = "reviewresults"></div>
-                <!-- <div id = "reviewcontainer"> -->
-                <div style="display:{{property}}" class="container">
+                
+                <div id = "reviewcontainer" style="display:none" class="container">
                   <form class="example" id = "submitreview" onsubmit="event.preventDefault(); reviewform()">
                       <div class="rate">
 

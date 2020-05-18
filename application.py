@@ -182,9 +182,9 @@ def apibook():
     reviews = []
     for reviewes in r:
         eachreview = {}
-        eachreview["email"] = reviewes.username
+        eachreview["username"] = reviewes.username
         eachreview["rating"] = reviewes.rating
-        eachreview["comment"] = reviewes.review
+        eachreview["review"] = reviewes.review
         reviews.append(eachreview)
     response['isbn'] = result.isbn
     response['title'] = result.title
@@ -210,6 +210,7 @@ def review_api():
         message = "Please Try again Later"
         return jsonify(message),500
     if result is None:
+        print("entered if")
         message = "Please enter valid ISBN"
         return jsonify(message), 404
     rating = request.get_json()['rating']
@@ -243,23 +244,22 @@ def review_api():
     reviews = []
     for revieww in r:
         eachreview = {}
-        eachreview["email"] = revieww.username
+        eachreview["username"] = revieww.username
         eachreview["rating"] = revieww.rating
-        eachreview["comment"] = revieww.review
+        eachreview["review"] = revieww.review
         reviews.append(eachreview)
     response['isbn'] = result.isbn
     response['title'] = result.title
     response['author'] = result.author
     response['year'] = result.year
     response['reviews'] = reviews
-    # message = "Review submitted successfully"
+    
     print(response)
     return jsonify(response), 200
   
 @app.route('/api/search', methods = ["POST"])
 def apisearch():
-    # print(request)
-    # print(request.is_json)
+    
     if not request.is_json:
         message = "Invalid request format"
         return jsonify(message),400
@@ -269,7 +269,7 @@ def apisearch():
     except:
         message = "Please Try again Later"
         return jsonify(message), 500
-    # print(booksdata)
+    
     if booksdata.__len__()==0:
         message = "No search results found"
         return jsonify(message),404
